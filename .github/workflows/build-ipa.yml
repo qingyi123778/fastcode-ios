@@ -1,0 +1,46 @@
+name: build-ipa
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install xcodegen
+        run: brew install xcodegen
+
+      - name: generate project
+        run: xcodegen generate
+
+      - name: archive
+        run: |
+          set -o pipefail
+          xcodebuild archive \
+            -project FastCode.xcodeproj \
+            -scheme FastCode \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/FastCode.xcarchive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_ENTITLEMENTS="" 2>&1 | tail -40
+
+      - name: package ipa
+        run: |
+          mkdir -p build/Payload
+          cp -R build/FastCode.xcarchive/Products/Applications/FastCode.app build/Payload/
+          cd build
+          zip -qry FastCode-1.17-unsigned.ipa Payload
+          ls -lh FastCode-1.17-unsigned.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FastCode-ipa
+          path: build/FastCode-1.17-unsigned.ipa
+          if-no-files-found: error
