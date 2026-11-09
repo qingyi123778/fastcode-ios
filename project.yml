@@ -1,0 +1,73 @@
+name: FastCode
+
+options:
+  bundleIdPrefix: com.takegai
+  deploymentTarget:
+    iOS: "16.2"
+  createIntermediateGroups: true
+  groupSortPosition: top
+  xcodeVersion: "15.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.17"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+
+targets:
+
+  FastCode:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.2"
+    sources:
+      - path: FastCode
+        excludes:
+          - "Info.plist"
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.takegai.fastcode
+        PRODUCT_NAME: FastCode
+        INFOPLIST_FILE: FastCode/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: NO
+        IPHONEOS_DEPLOYMENT_TARGET: "16.2"
+    dependencies:
+      - target: FastCodeWidget
+        embed: true
+
+  FastCodeWidget:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "16.2"
+    sources:
+      - path: FastCodeWidget
+        excludes:
+          - "Info.plist"
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.takegai.fastcode.widget
+        PRODUCT_NAME: FastCodeWidget
+        INFOPLIST_FILE: FastCodeWidget/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        SKIP_INSTALL: YES
+        TARGETED_DEVICE_FAMILY: "1"
+        IPHONEOS_DEPLOYMENT_TARGET: "16.2"
+
+schemes:
+  FastCode:
+    build:
+      targets:
+        FastCode: all
+        FastCodeWidget: all
+    run:
+      config: Debug
+    archive:
+      config: Release
