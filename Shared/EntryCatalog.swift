@@ -64,18 +64,21 @@ enum EntryCatalog {
 
     // MARK: - 身份码（3）
 
+    // 页面来源：淘宝分享短链 m.tb.cn/h.jQA7jmN 解析出的真实地址
+    // （pages-fast uniapp 1100333 / m-end-school-tab，即「扫码查取件」）
+    // 原来的 market.m.taobao.com/.../authCode.html 是另一套活动页，扫出来不是驿站认的码，已换掉
     static let taobaoCode = JumpEntry(
         key: "taobao_code",
         title: "淘宝身份码",
         group: .code,
         iconAsset: "ic_taobao",
         appURLs: [
-            "tbopen://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fmarket.m.taobao.com%2Fapp%2Fcn-yz%2Fmulti-activity%2FauthCode.html",
-            "taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fmarket.m.taobao.com%2Fapp%2Fcn-yz%2Fmulti-activity%2FauthCode.html"
+            "tbopen://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fpages-fast.m.taobao.com%2Fwow%2Fz%2Funiapp%2F1100333%2Flast-mile-fe%2Fm-end-school-tab%2Fhome%3Fx-ssr%3Dtrue%26forceThemis%3Dtrue%26ssr%3Dtrue%26spm%3Da2141.1.iconsv5.5%26source%3DST_HOME_ICON%26subSource%3DHOME_ICON%26sp_tk%3DdGo5WTYyb0l6clQ%253D",
+            "taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fpages-fast.m.taobao.com%2Fwow%2Fz%2Funiapp%2F1100333%2Flast-mile-fe%2Fm-end-school-tab%2Fhome%3Fx-ssr%3Dtrue%26forceThemis%3Dtrue%26ssr%3Dtrue%26spm%3Da2141.1.iconsv5.5%26source%3DST_HOME_ICON%26subSource%3DHOME_ICON"
         ],
-        webURL: "https://market.m.taobao.com/app/cn-yz/multi-activity/authCode.html",
+        webURL: "https://m.tb.cn/h.jQA7jmN",
         miniProgram: nil,
-        successToast: "已打开淘宝身份码，向驿站出示即可"
+        successToast: "已打开淘宝取件码，向驿站出示即可"
     )
 
     static let pddCode = JumpEntry(
