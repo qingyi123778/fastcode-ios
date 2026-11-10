@@ -1,6 +1,6 @@
-# 取件快码 iOS
+# 快递取件 iOS
 
-从 `取件快码-1.17.apk`（`com.takegai.fastcode`，MD5 `dd151f1f494382490f95130608cb893c`）逆向重写的 iOS 原生版本。
+从 `快递取件-1.17.apk`（`com.takegai.fastcode`，MD5 `dd151f1f494382490f95130608cb893c`）逆向重写的 iOS 原生版本。
 
 - 最低系统：**iOS 16.2**
 - 语言：Swift 5 + SwiftUI

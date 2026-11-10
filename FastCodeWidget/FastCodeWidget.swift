@@ -48,7 +48,7 @@ struct FCWidgetView: View {
                 RoundedRectangle(cornerRadius: 1.5)
                     .fill(Color(red: 0.0, green: 0.59, blue: 0.53))
                     .frame(width: 2.5, height: 11)
-                Text("取件快码")
+                Text("快递取件")
                     .font(.system(size: 12, weight: .semibold))
                 Spacer()
             }
@@ -110,8 +110,8 @@ struct FastCodeWidget: Widget {
                     .background(Color(.systemBackground))
             }
         }
-        .configurationDisplayName("取件快码")
-        .description("三个身份码，六个查件入口，点一下直达。")
+        .configurationDisplayName("快递取件")
+        .description("两个身份码，六个查件入口，点一下直达。")
         .supportedFamilies([.systemMedium, .systemLarge])
     }
 }

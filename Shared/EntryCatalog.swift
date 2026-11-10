@@ -1,6 +1,7 @@
 import Foundation
 
-// 入口分组。顺序与 Android 原版一致：3 个身份码 + 6 个查件入口。
+// 入口分组：2 个身份码 + 6 个查件入口。
+// 京东身份码已按需求移除 —— 京东没有独立的身份码页，只保留「京东待取」。
 enum EntryGroup: String, CaseIterable, Identifiable, Hashable {
     case code
     case pending
@@ -105,6 +106,9 @@ enum EntryCatalog {
         successToast: "已打开京东订单，点开对应订单即可看到取件码"
     )
 
+    // 京东身份码不再展示，定义保留在这里，想加回来只需把它塞进 codeEntries
+    static let codeEntries: [JumpEntry] = [taobaoCode, pddCode]
+
     // MARK: - 查看待取包裹（6）
 
     static let taobaoPending = JumpEntry(
@@ -192,7 +196,6 @@ enum EntryCatalog {
         successToast: "已打开得物订单列表"
     )
 
-    static let codeEntries: [JumpEntry] = [taobaoCode, pddCode, jdCode]
     static let pendingEntries: [JumpEntry] = [
         taobaoPending, pddPending, jdPending, douyinPending, kuaishouPending, dewuPending
     ]

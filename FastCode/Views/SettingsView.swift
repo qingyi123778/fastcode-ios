@@ -121,26 +121,6 @@ struct SettingsView: View {
                         .foregroundStyle(prefs.theme.inkPrimary)
                 }
                 Divider().overlay(prefs.theme.divider)
-                HStack {
-                    Text("作者")
-                        .font(.system(size: 13))
-                        .foregroundStyle(prefs.theme.inkSecondary)
-                    Spacer()
-                    Text("吾爱xiaopaione")
-                        .font(.system(size: 13))
-                        .foregroundStyle(prefs.theme.inkPrimary)
-                }
-                Divider().overlay(prefs.theme.divider)
-                HStack {
-                    Text("致谢")
-                        .font(.system(size: 13))
-                        .foregroundStyle(prefs.theme.inkSecondary)
-                    Spacer()
-                    Text("吾爱破解")
-                        .font(.system(size: 13))
-                        .foregroundStyle(prefs.theme.inkPrimary)
-                }
-                Divider().overlay(prefs.theme.divider)
                 Button {
                     prefs.resetOrder()
                 } label: {

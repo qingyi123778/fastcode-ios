@@ -6,7 +6,13 @@ struct ContentView: View {
     @State private var showSettings = false
     @State private var draggingKey: String?
 
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 10), count: 3)
+    // 身份码 2 格铺满，查件入口 6 格 3 列
+    private let codeColumns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 2)
+    private let pendingColumns = Array(repeating: GridItem(.flexible(), spacing: 10), count: 3)
+
+    private func columns(for group: EntryGroup) -> [GridItem] {
+        group == .code ? codeColumns : pendingColumns
+    }
 
     var body: some View {
         ZStack {
@@ -58,11 +64,11 @@ struct ContentView: View {
                 )
                 .shadow(color: Color.black.opacity(0.10), radius: 12, y: 4)
 
-            Text("取件快码")
+            Text("快递取件")
                 .font(.system(size: 23, weight: .bold))
                 .foregroundStyle(prefs.theme.inkPrimary)
 
-            Text("三个身份码 · 六个查件入口")
+            Text("两个身份码 · 六个查件入口")
                 .font(.system(size: 12.5))
                 .foregroundStyle(prefs.theme.inkSecondary)
         }
@@ -99,9 +105,13 @@ struct ContentView: View {
                     .foregroundStyle(prefs.theme.inkSecondary)
             }
 
-            LazyVGrid(columns: columns, spacing: 10) {
+            LazyVGrid(columns: columns(for: group), spacing: 10) {
                 ForEach(prefs.entries(in: group)) { entry in
-                    EntryTile(entry: entry, theme: prefs.theme) {
+                    EntryTile(
+                        entry: entry,
+                        theme: prefs.theme,
+                        size: group == .code ? .large : .regular
+                    ) {
                         Task { await jump(entry) }
                     }
                     .onDrag {
@@ -126,35 +136,21 @@ struct ContentView: View {
     // MARK: - 底部
 
     private var footer: some View {
-        VStack(spacing: 14) {
-            Button {
-                showSettings = true
-            } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "slider.horizontal.3")
-                        .font(.system(size: 12, weight: .semibold))
-                    Text("设置")
-                        .font(.system(size: 13, weight: .medium))
-                }
-                .foregroundStyle(prefs.theme.pillText)
-                .padding(.horizontal, 18)
-                .padding(.vertical, 10)
-                .background(Capsule().fill(prefs.theme.pillFill))
+        Button {
+            showSettings = true
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "slider.horizontal.3")
+                    .font(.system(size: 12, weight: .semibold))
+                Text("设置")
+                    .font(.system(size: 13, weight: .medium))
             }
-            .buttonStyle(.plain)
-
-            Text("长按任意一行可以拖动排序")
-                .font(.system(size: 10.5))
-                .foregroundStyle(prefs.theme.inkSecondary.opacity(0.8))
-
-            Text("作者：吾爱xiaopaione")
-                .font(.system(size: 10.5))
-                .foregroundStyle(prefs.theme.inkSecondary.opacity(0.8))
-
-            Text("致谢：吾爱破解")
-                .font(.system(size: 10.5))
-                .foregroundStyle(prefs.theme.inkSecondary.opacity(0.55))
+            .foregroundStyle(prefs.theme.pillText)
+            .padding(.horizontal, 18)
+            .padding(.vertical, 10)
+            .background(Capsule().fill(prefs.theme.pillFill))
         }
+        .buttonStyle(.plain)
         .padding(.top, 6)
     }
 
