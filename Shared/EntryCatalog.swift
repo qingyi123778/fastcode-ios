@@ -64,21 +64,21 @@ enum EntryCatalog {
 
     // MARK: - 身份码（3）
 
-    // 页面来源：淘宝分享短链 m.tb.cn/h.jQA7jmN 解析出的真实地址
-    // （pages-fast uniapp 1100333 / m-end-school-tab，即「扫码查取件」）
-    // 原来的 market.m.taobao.com/.../authCode.html 是另一套活动页，扫出来不是驿站认的码，已换掉
+    // 身份码页。实测路由：end-collect-platform 这个 uniapp 应用下的 identity-code
+    // （JS 里 title:"身份码"、spm.spmB:"identity-code"，页面样式 p_identity-code-index.css）
+    // 1100333/m-end-school-tab 那一套是驿站首页，打开只会停在首页 tab，不带身份码
     static let taobaoCode = JumpEntry(
         key: "taobao_code",
         title: "淘宝身份码",
         group: .code,
         iconAsset: "ic_taobao",
         appURLs: [
-            "tbopen://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fpages-fast.m.taobao.com%2Fwow%2Fz%2Funiapp%2F1100333%2Flast-mile-fe%2Fm-end-school-tab%2Fhome%3Fx-ssr%3Dtrue%26forceThemis%3Dtrue%26ssr%3Dtrue%26spm%3Da2141.1.iconsv5.5%26source%3DST_HOME_ICON%26subSource%3DHOME_ICON%26sp_tk%3DdGo5WTYyb0l6clQ%253D",
-            "taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fpages-fast.m.taobao.com%2Fwow%2Fz%2Funiapp%2F1100333%2Flast-mile-fe%2Fm-end-school-tab%2Fhome%3Fx-ssr%3Dtrue%26forceThemis%3Dtrue%26ssr%3Dtrue%26spm%3Da2141.1.iconsv5.5%26source%3DST_HOME_ICON%26subSource%3DHOME_ICON"
+            "tbopen://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fpages-fast.m.taobao.com%2Fwow%2Fz%2Funiapp%2F1011717%2Flast-mile-fe%2Fend-collect-platform%2Fidentity-code%3Fx-ssr%3Dtrue",
+            "taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fpages-fast.m.taobao.com%2Fwow%2Fz%2Funiapp%2F1011717%2Flast-mile-fe%2Fend-collect-platform%2Fidentity-code%3Fx-ssr%3Dtrue"
         ],
-        webURL: "https://m.tb.cn/h.jQA7jmN",
+        webURL: "https://pages-fast.m.taobao.com/wow/z/uniapp/1011717/last-mile-fe/end-collect-platform/identity-code?x-ssr=true",
         miniProgram: nil,
-        successToast: "已打开淘宝取件码，向驿站出示即可"
+        successToast: "已打开淘宝身份码，向驿站出示即可"
     )
 
     static let pddCode = JumpEntry(
@@ -114,17 +114,18 @@ enum EntryCatalog {
 
     // MARK: - 查看待取包裹（6）
 
+    // 待取列表走驿站首页（1100333/m-end-school-tab/home），那里才有「待取件 / 追踪中」
+    // 的分栏和未取包裹列表。原来指到 identity-code，和身份码按钮撞成同一个页面
     static let taobaoPending = JumpEntry(
         key: "taobao_pending",
         title: "淘宝待取",
         group: .pending,
         iconAsset: "ic_taobao",
         appURLs: [
-            "tbopen://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fpages-fast.m.taobao.com%2Fwow%2Fz%2Funiapp%2F1011717%2Flast-mile-fe%2Fend-collect-platform%2Fidentity-code%3Fx-ssr%3Dtrue",
-            "taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fpages-fast.m.taobao.com%2Fwow%2Fz%2Funiapp%2F1011717%2Flast-mile-fe%2Fend-collect-platform%2Fidentity-code%3Fx-ssr%3Dtrue",
-            "tbopen://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fpages-fast.m.taobao.com%2Fwow%2Fz%2Funiapp%2F1100333%2Flast-mile-fe%2Fm-end-school-tab%2Fhome"
+            "tbopen://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fpages-fast.m.taobao.com%2Fwow%2Fz%2Funiapp%2F1100333%2Flast-mile-fe%2Fm-end-school-tab%2Fhome%3Fx-ssr%3Dtrue%26skeleton%3Dtrue",
+            "taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fpages-fast.m.taobao.com%2Fwow%2Fz%2Funiapp%2F1100333%2Flast-mile-fe%2Fm-end-school-tab%2Fhome%3Fx-ssr%3Dtrue%26skeleton%3Dtrue"
         ],
-        webURL: "https://pages-fast.m.taobao.com/wow/z/uniapp/1011717/last-mile-fe/end-collect-platform/identity-code?x-ssr=true",
+        webURL: "https://pages-fast.m.taobao.com/wow/z/uniapp/1100333/last-mile-fe/m-end-school-tab/home?x-ssr=true",
         miniProgram: nil,
         successToast: "已打开淘宝待取列表，下拉可刷新"
     )
