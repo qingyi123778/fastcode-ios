@@ -4,7 +4,6 @@ struct ContentView: View {
     @EnvironmentObject private var prefs: Prefs
     @State private var toast: String?
     @State private var showSettings = false
-    @State private var showAggregate = false
     @State private var draggingKey: String?
 
     // 身份码 2 格铺满，查件入口 6 格 3 列
@@ -22,7 +21,6 @@ struct ContentView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 22) {
                     header
-                    aggregateEntry
                     section(.code)
                     section(.pending)
                     footer
@@ -37,63 +35,6 @@ struct ContentView: View {
             SettingsView()
                 .environmentObject(prefs)
         }
-        .sheet(isPresented: $showAggregate) {
-            AggregateView()
-                .environmentObject(prefs)
-        }
-    }
-
-    // MARK: - 聚合入口
-
-    private var aggregateEntry: some View {
-        Button {
-            showAggregate = true
-        } label: {
-            HStack(spacing: 12) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(prefs.theme.tileFill)
-                        .frame(width: 42, height: 42)
-                    Image(systemName: "shippingbox.and.arrow.backward")
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(prefs.theme.accent)
-                }
-
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("全部待取")
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(prefs.theme.inkPrimary)
-                    Text("拼多多 · 淘宝 · 京东 · 抖音 合到一屏")
-                        .font(.system(size: 11.5))
-                        .foregroundStyle(prefs.theme.inkSecondary)
-                        .lineLimit(1)
-                }
-
-                Spacer(minLength: 4)
-
-                Text("拼多多")
-                    .font(.system(size: 10.5, weight: .medium))
-                    .foregroundStyle(prefs.theme.accent)
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 3)
-                    .background(Capsule().fill(prefs.theme.pillFill))
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(prefs.theme.inkSecondary)
-            }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 12)
-            .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(prefs.theme.cardFill)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .stroke(prefs.theme.cardStroke, lineWidth: 1)
-            )
-        }
-        .buttonStyle(.plain)
     }
 
     // MARK: - 背景
