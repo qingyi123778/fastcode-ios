@@ -23,8 +23,11 @@ struct AggregateView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("关闭") { dismiss() }
-                        .foregroundStyle(prefs.theme.accent)
+                    Button("关闭") {
+                        grabber.teardown()
+                        dismiss()
+                    }
+                    .foregroundStyle(prefs.theme.accent)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("抓取") {
@@ -44,9 +47,9 @@ struct AggregateView: View {
                     grabber.load()
                 }
             }
-            .onDisappear {
-                grabber.teardown()
-            }
+            // 不在这里 teardown：sheet 弹出、来电、切后台都会触发 onDisappear，
+            // 一 teardown 就把消息通道断了，回来之后抓取静默失效。
+            // 交给 deinit 处理。
         }
     }
 
@@ -162,6 +165,13 @@ struct GrabResultView: View {
             Text("接口响应 \(grabber.caught.count) 条")
                 .font(.system(size: 12))
                 .foregroundStyle(prefs.theme.inkSecondary)
+
+            if !grabber.authNote.isEmpty {
+                Text(grabber.authNote)
+                    .font(.system(size: 10.5))
+                    .foregroundStyle(prefs.theme.inkSecondary.opacity(0.85))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(14)
@@ -171,10 +181,14 @@ struct GrabResultView: View {
 
     private var emptyHint: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("没从页面里认出取件码")
+            Text("没识别到包裹")
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(prefs.theme.inkPrimary)
-            Text("可能原因：还没登录、包裹列表没加载出来、或者取件码在详情页里。把「原始数据」里的页面文本截图发我，我按真实结构改解析。")
+            Text("先看页面本身有没有包裹。如果页面写着「当前站点暂无该手机号收到的快递」，那是这个驿站确实没有你的件——换站点，或者点页面上的「绑定手机号」把号码绑上再抓。")
+                .font(.system(size: 12))
+                .foregroundStyle(prefs.theme.inkSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+            Text("页面有包裹但这里显示 0，就把「看原始数据」里的页面文本和接口列表截图发我。")
                 .font(.system(size: 12))
                 .foregroundStyle(prefs.theme.inkSecondary)
                 .fixedSize(horizontal: false, vertical: true)
