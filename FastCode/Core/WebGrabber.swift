@@ -34,6 +34,7 @@ final class WebGrabber: NSObject, ObservableObject {
         let cfg = WKWebViewConfiguration()
         // 必须是 default()：cookie 和 localStorage 都要落盘，重进才有登录态
         cfg.websiteDataStore = .default()
+        cfg.allowsInlineMediaPlayback = true
 
         let uc = WKUserContentController()
         uc.addUserScript(WKUserScript(
@@ -49,7 +50,6 @@ final class WebGrabber: NSObject, ObservableObject {
         // 找不到反而更容易被判异常。真实浏览器身份 + 同站代理才是正路。
         webView.customUserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.2 Mobile/15E148 Safari/604.1"
         webView.allowsBackForwardNavigationGestures = true
-        webView.allowsInlineMediaPlayback = true
 
         super.init()
 
