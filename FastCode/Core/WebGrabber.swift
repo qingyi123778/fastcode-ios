@@ -169,11 +169,14 @@ final class WebGrabber: NSObject, ObservableObject {
         }
 
         // 再从捕获的接口 JSON 里抽一遍 —— 比 DOM 正则准，也不依赖页面渲染
-        for p in extractFromCaught()
-        where !found.contains(where: {
-            $0.title == p.title && $0.pickupCode == p.pickupCode
-        }) {
-            found.append(p)
+        for p in extractFromCaught() {
+            // 同一个包裹会被专用解析和语义扫描各产出一次，按码/图去重
+            let dup = found.contains { old in
+                if let a = old.pickupCode, let b = p.pickupCode, a == b { return true }
+                if let a = old.thumbnail, let b = p.thumbnail, a == b { return true }
+                return old.title == p.title && old.pickupCode == nil && p.pickupCode == nil
+            }
+            if !dup { found.append(p) }
         }
 
         items = found
@@ -196,9 +199,69 @@ final class WebGrabber: NSObject, ObservableObject {
                   let data = trimmed.data(using: .utf8),
                   let obj = try? JSONSerialization.jsonObject(with: data)
             else { continue }
+            // 先走拼多多已知结构（准），再走语义扫描兜底（防改版）
+            parsePackageLists(obj, &out, station: nil, depth: 0)
             scanPackages(obj, &out, depth: 0)
         }
         return out
+    }
+
+    /// 拼多多的包裹列表字段（从 4039 chunk 里逆出来的）：
+    ///   not_lighting_package_list / auto_lighting_package_list / combine_list
+    /// 每个元素：
+    ///   pick_code        "取件码1-2-3"，前缀要去掉
+    ///   pic_url          缩略图
+    ///   ship_name        快递公司
+    ///   tracking_number  运单号
+    ///   station_code     站点码（在外层）
+    private func parsePackageLists(_ any: Any, _ out: inout [PackageItem],
+                                   station: String?, depth: Int) {
+        guard depth < 10, out.count < 60 else { return }
+
+        if let dict = any as? [String: Any] {
+            // 站点名/码可能在同层的兄弟字段上
+            let st = (dict["station_name"] as? String)
+                ?? (dict["station_code"] as? String)
+                ?? station
+
+            for (k, v) in dict {
+                let key = k.lowercased()
+
+                if key.contains("package_list"), let arr = v as? [Any] {
+                    for item in arr {
+                        guard let d = item as? [String: Any] else { continue }
+                        var code = d["pick_code"] as? String
+                        code = code?
+                            .replacingOccurrences(of: "取件码", with: "")
+                            .replacingOccurrences(of: "取货码", with: "")
+                            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+                        let pic = (d["pic_url"] as? String) ?? (d["thumb_url"] as? String)
+                        let ship = d["ship_name"] as? String
+                        let track = d["tracking_number"] as? String
+
+                        // 没码没图，基本不是包裹
+                        if (code ?? "").isEmpty && (pic ?? "").isEmpty { continue }
+
+                        var title = ship ?? "包裹"
+                        if let t = track, !t.isEmpty { title += " · " + t }
+
+                        out.append(PackageItem(
+                            platform: platform.title,
+                            title: title,
+                            thumbnail: pic,
+                            pickupCode: (code ?? "").isEmpty ? nil : code,
+                            station: st,
+                            status: "待取件"
+                        ))
+                    }
+                    continue
+                }
+                parsePackageLists(v, &out, station: st, depth: depth + 1)
+            }
+        } else if let arr = any as? [Any] {
+            for v in arr { parsePackageLists(v, &out, station: station, depth: depth + 1) }
+        }
     }
 
     private func scanPackages(_ any: Any, _ out: inout [PackageItem], depth: Int) {
@@ -221,7 +284,8 @@ final class WebGrabber: NSObject, ObservableObject {
                 }
                 if title == nil, s.count > 1, s.count < 160, !s.hasPrefix("http"),
                    key == "goods_name" || key == "product_name" || key == "title"
-                    || key == "name" || key.contains("goods_title") {
+                    || key == "name" || key == "ship_name"
+                    || key.contains("goods_title") {
                     title = s
                 }
                 if thumb == nil, s.hasPrefix("http"),
@@ -237,16 +301,22 @@ final class WebGrabber: NSObject, ObservableObject {
             }
 
             // 有取件码，或者「商品名 + 图」齐了，就当这是一个包裹
-            if let code = code, code.count >= 3 {
-                out.append(PackageItem(
-                    platform: platform.title,
-                    title: title ?? "包裹",
-                    thumbnail: thumb,
-                    pickupCode: code,
-                    station: station,
-                    status: "待取件"
-                ))
-                return   // 已经是包裹节点，别再往下钻，免得子字段被重复计一条
+            if let raw = code {
+                let clean = raw
+                    .replacingOccurrences(of: "取件码", with: "")
+                    .replacingOccurrences(of: "取货码", with: "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                if clean.count >= 3 {
+                    out.append(PackageItem(
+                        platform: platform.title,
+                        title: title ?? "包裹",
+                        thumbnail: thumb,
+                        pickupCode: clean,
+                        station: station,
+                        status: "待取件"
+                    ))
+                    return   // 已经是包裹节点，别再往下钻，免得子字段被重复计一条
+                }
             }
             if let title = title, let thumb = thumb {
                 out.append(PackageItem(
